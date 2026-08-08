@@ -1,0 +1,552 @@
+= VOID-A Web Edition
+:toc:
+:sectnums:
+
+== 개요
+
+VOID-A 아카이브를 단순한 이미지와 영상 기록에서 확장하여,
+기존 전시 공간을 3D 환경으로 재구성하고 웹에서 직접 체험할 수 있는
+Web Edition을 실험한다.
+
+목표는 실제 전시를 그대로 복원하는 것이 아니라,
+원작의 핵심이었던 "시선과 인식"이라는 개념을
+웹 환경에서 새로운 방식으로 확장하는 것이다.
+
+
+== 원작과 Web Edition
+
+기존 VOID-A 전시에서는 관객의 위치와 머리 움직임 등을 기반으로
+관객의 시선을 추정하고 작품과 상호작용하도록 구성했다.
+
+웹에서는 관객이 직접 가상 공간을 탐색할 수 있기 때문에
+카메라의 위치와 방향을 보다 명확하게 사용할 수 있다.
+
+[source,text]
+----
+VOID-A Original
+
+관객
+  |
+  v
+현실 공간
+  |
+  v
+Kinect / Tracking
+  |
+  v
+머리 / 위치 추정
+  |
+  v
+작품 반응
+----
+
+[source,text]
+----
+VOID-A Web Edition
+
+관객
+  |
+  v
+Web Camera
+  |
+  +-- Position
+  +-- Direction
+  +-- Movement
+  |
+  v
+가상 전시 공간
+  |
+  v
+Gaze / Visibility / Distance
+  |
+  v
+작품 반응
+----
+
+
+== 핵심 아이디어
+
+Web Edition에서는 가상 전시 공간 자체를 하나의 인터랙티브 환경으로 취급한다.
+
+관객은 단순히 영상을 감상하는 것이 아니라
+가상 전시 공간을 이동하면서 작품을 바라보게 된다.
+
+카메라의 위치와 방향을 이용하여
+관객이 무엇을 보고 있는지,
+얼마나 가까이 있는지,
+얼마나 오래 바라보고 있는지를 계산한다.
+
+[source,text]
+----
+Camera
+  |
+  +-- Position
+  |
+  +-- Direction
+  |
+  +-- Field of View
+  |
+  v
+Gaze Information
+  |
+  +-- Target
+  +-- Angle
+  +-- Distance
+  +-- Visibility
+  +-- Dwell Time
+----
+
+
+== Gaze를 Control Signal로 사용
+
+시선 정보를 하나의 Control Signal로 추상화한다.
+
+[source,text]
+----
+Camera
+  |
+  v
+Gaze Analysis
+  |
+  +-- Target
+  +-- Angle
+  +-- Distance
+  +-- Visibility
+  +-- Dwell Time
+  |
+  v
+Gaze Signal
+  |
+  +----------+----------+----------+
+  |          |          |          |
+  v          v          v          v
+ Audio     Lighting   Shader    World State
+----
+
+하나의 시선 정보가 여러 시스템의 입력으로 사용될 수 있다.
+
+
+== 바라보는 방향
+
+카메라가 특정 오브젝트를 얼마나 정확하게 바라보고 있는지를
+하나의 값으로 변환할 수 있다.
+
+[source,text]
+----
+정면
+  |
+  v
+High Gaze Weight
+
+약간 옆
+  |
+  v
+Medium Gaze Weight
+
+시야 가장자리
+  |
+  v
+Low Gaze Weight
+
+시야 밖
+  |
+  v
+Zero
+----
+
+이 값을 오디오, 조명, 셰이더, 파티클 등의 입력으로 사용할 수 있다.
+
+
+== Distance와 Gaze의 결합
+
+단순한 거리 기반 인터랙션보다
+거리와 시선을 동시에 사용하는 방식이 가능하다.
+
+[source,text]
+----
+Distance
+    |
+    +----------------+
+                     |
+Gaze Angle           |
+    |                |
+    +--------+-------+
+             |
+             v
+       Interaction
+             |
+     +-------+-------+
+     |       |       |
+     v       v       v
+   Audio   Shader   Light
+----
+
+예를 들어:
+
+* 가까이 있지만 바라보지 않으면 반응이 작다.
+* 멀리 있어도 정확히 바라보면 반응한다.
+* 가까이 접근하면서 바라보면 반응이 강해진다.
+
+
+== Dwell Time
+
+얼마나 오래 바라보았는지를 별도의 입력으로 사용한다.
+
+[source,text]
+----
+Gaze Start
+    |
+    v
+  0 sec
+    |
+    v
+  2 sec
+    |
+    v
+  5 sec
+    |
+    v
+ 10 sec
+----
+
+예:
+
+[source,text]
+----
+0 sec
+→ 변화 없음
+
+2 sec
+→ 미세한 반응
+
+5 sec
+→ 오브젝트 활성화
+
+10 sec
+→ 주변 공간 변화
+
+20 sec
+→ 새로운 사운드 또는 비주얼 상태
+----
+
+관객이 오래 바라볼수록 작품의 상태가 변화하도록 만들 수 있다.
+
+
+== 시선을 돌리는 행위
+
+시선을 바라보는 행위뿐 아니라
+시선을 돌리는 행위도 인터랙션으로 사용할 수 있다.
+
+[source,text]
+----
+Object
+  |
+  v
+Looking
+  |
+  v
+Accumulated State
+  |
+  v
+Look Away
+  |
+  v
+State Change
+  |
+  v
+Look Back
+  |
+  v
+Changed Object
+----
+
+관객이 변화를 직접 목격하지 못한 순간 자체가
+작품의 변화가 될 수 있다.
+
+
+== Visibility
+
+오브젝트가 관객의 시야 안에 있는지를 별도의 상태로 취급한다.
+
+[source,text]
+----
+Object
+  |
+  v
+Visible?
+  |
+  +-- YES
+  |    |
+  |    v
+  |  Active
+  |
+  +-- NO
+       |
+       v
+     Hidden State
+----
+
+이를 이용하여:
+
+* 시야 안에서만 소리가 들리게 하기
+* 시야 밖에서 오브젝트가 변화하게 하기
+* 다시 바라보았을 때 새로운 상태가 나타나게 하기
+* 보지 않는 동안 공간의 다른 부분이 변화하게 하기
+
+등의 구조를 만들 수 있다.
+
+
+== Gaze와 Audio
+
+시선 정보를 오디오 파라미터와 연결한다.
+
+[source,text]
+----
+Gaze Signal
+    |
+    +-- Angle
+    +-- Distance
+    +-- Dwell Time
+    |
+    v
+Audio Parameters
+    |
+    +-- Volume
+    +-- Spatial Position
+    +-- Filter
+    +-- Reverb
+    +-- Texture
+----
+
+예:
+
+* 바라볼수록 소리가 커진다.
+* 정확히 바라볼 때만 특정 소리가 들린다.
+* 오래 바라볼수록 새로운 음향 레이어가 추가된다.
+* 시선을 돌리면 소리가 사라지거나 다른 위치로 이동한다.
+
+
+== Gaze와 Visual
+
+동일한 Gaze Signal을 시각 요소에도 연결할 수 있다.
+
+[source,text]
+----
+Gaze Signal
+    |
+    +-- Emission
+    +-- Roughness
+    +-- Displacement
+    +-- Particle Density
+    +-- Light Intensity
+    +-- Fog
+    +-- Color
+----
+
+따라서 하나의 관객 행동이
+소리와 시각을 동시에 변화시킬 수 있다.
+
+
+== Web Edition의 공간
+
+기존 전시 공간을 3D asset으로 재구성한다.
+
+[source,text]
+----
+TouchDesigner
+     |
+     v
+전시 공간 제작
+     |
+     +-- Geometry
+     +-- Materials
+     +-- Animation
+     +-- Particles
+     +-- Effects
+     |
+     v
+Bake
+     |
+     v
+GLB / glTF / 기타 데이터
+     |
+     v
+Three.js
+     |
+     v
+Web Exhibition
+----
+
+전시 당시의 카메라 데이터는 필요하지 않다.
+
+Web Edition에서는 웹의 관객이 직접 카메라를 제어한다.
+
+
+== User Camera
+
+웹에서 새로운 관객용 카메라를 사용한다.
+
+[source,text]
+----
+User Input
+    |
+    +-- Mouse
+    +-- Keyboard
+    +-- Touch
+    +-- Gyroscope
+    +-- VR Head Tracking
+    |
+    v
+User Camera
+    |
+    v
+3D Exhibition Space
+----
+
+원작의 전시 카메라를 재현하는 것이 아니라
+관객이 직접 공간을 탐색하는 방식이다.
+
+
+== Original과 Web Edition의 차이
+
+[source,text]
+----
+Original
+
+관객
+  |
+  v
+실제 공간
+  |
+  v
+Tracking
+  |
+  v
+제한된 위치 / 시선 정보
+  |
+  v
+작품 반응
+----
+
+[source,text]
+----
+Web Edition
+
+관객
+  |
+  v
+가상 공간
+  |
+  v
+User Camera
+  |
+  +-- Position
+  +-- Direction
+  +-- Distance
+  +-- Visibility
+  +-- Dwell Time
+  |
+  v
+Gaze Signal
+  |
+  v
+작품 반응
+----
+
+Web Edition에서는 원작보다 더 많은 공간적 정보를
+인터랙션에 사용할 수 있다.
+
+
+== 확장 가능한 Input
+
+향후 다음과 같은 입력을 추가할 수 있다.
+
+[source,text]
+----
+User Input
+|
++-- Camera Position
++-- Camera Direction
++-- Gaze Target
++-- Gaze Angle
++-- Distance
++-- Dwell Time
++-- Visibility
++-- Movement Speed
++-- Mouse
++-- Touch
++-- Scroll
++-- Keyboard
++-- Gyroscope
++-- Audio
++-- VR Head Tracking
+----
+
+모든 입력은 최종적으로 Control Signal로 변환하여
+오디오와 비주얼 시스템에 연결할 수 있다.
+
+
+== Web Edition의 방향
+
+Web Edition은 원작을 단순히 웹으로 복제하는 것이 아니다.
+
+기존 작품의 핵심 개념을 유지하면서
+웹이라는 환경에서 가능한 새로운 관객 경험을 실험한다.
+
+[source,text]
+----
+VOID-A
+  |
+  v
+Original Exhibition
+  |
+  v
+Archive
+  |
+  v
+Web Edition
+  |
+  +-- Spatial Experience
+  +-- User Camera
+  +-- Gaze Interaction
+  +-- Audio Reactive
+  +-- Visual Reactive
+  +-- Dynamic World
+  +-- VR
+----
+
+따라서 Web Edition은
+기존 작품의 기록물이면서 동시에
+새로운 형태의 작품 확장이 될 수 있다.
+
+
+== 향후 실험
+
+초기 구현에서는 복잡한 실시간 시스템보다
+다음과 같은 최소 구조부터 검증한다.
+
+. 전시 공간을 3D asset으로 변환
+. 웹에서 공간 로딩
+. 자유로운 User Camera 구현
+. 특정 오브젝트에 대한 Gaze Detection
+. Gaze Weight 계산
+. Distance 계산
+. Dwell Time 계산
+. Gaze Signal을 Audio에 연결
+. Gaze Signal을 Visual에 연결
+. 시야 밖에서 발생하는 상태 변화 실험
+. 모바일 Touch / Gyroscope 확장
+. 이후 WebXR 검토
+
+
+== 핵심 문장
+
+[quote]
+VOID-A Web Edition은 전시 공간을 웹으로 복원하는 것이 아니라,
+관객이 그 공간을 직접 바라보고 이동하면서
+작품의 상태를 변화시키는 새로운 형태의 Spatial Archive를 실험한다.
+
+[quote]
+원작에서는 관객의 시선을 추정했다면,
+Web Edition에서는 관객의 카메라 방향과 공간적 관계를
+직접적인 Control Signal로 사용할 수 있다.
