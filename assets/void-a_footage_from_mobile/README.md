@@ -17,7 +17,7 @@ Original filenames are preserved. Files are grouped for easier browsing; folder 
 
 ## Owner-confirmed sound-system anchors
 
-- `04_directional-audio-circuit/IMG_20230724_220525_619.jpg` — authored Fritzing hardware schematic
+- `04_directional-audio-circuit/1688453264918.png` — original authored Fritzing hardware schematic
 - `04_directional-audio-circuit/1687684088139.png` — authored Tinkercad circuit simulation
 - `03_directional-audio-fabrication/1688312316621-0.jpg` — physical system integration
 - `04_directional-audio-circuit/20230629_192612.jpg` — 555 modulation breadboard detail
