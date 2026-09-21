@@ -16,13 +16,13 @@
 다음 자료는 특정한 2023-07-02 행사의 확정 기록으로 묶지 않고,
 후기 설치·전시 상태를 보여주는 evidence로 취급한다.
 
-- `assets/void-a_footage_from_mobile/1688312987148-5(1).jpg`
-- `assets/void-a_footage_from_mobile/1688366312045.jpg`
-- `assets/void-a_footage_from_mobile/1688366314295.jpg`
-- `assets/void-a_footage_from_mobile/kakaotalk_1688312373255.mp4`
-- `assets/void-a_footage_from_mobile/kakaotalk_1688312373255_1.mp4`
-- `assets/void-a_footage_from_mobile/kakaotalk_1688312374413.mp4`
-- `assets/void-a_footage_from_mobile/kakaotalk_1688366354025.mp4`
+- `assets/void-a_footage_from_mobile/06_exhibition-documentation/1688312987148-5(1).jpg`
+- `assets/void-a_footage_from_mobile/06_exhibition-documentation/1688366312045.jpg`
+- `assets/void-a_footage_from_mobile/06_exhibition-documentation/1688366314295.jpg`
+- `assets/void-a_footage_from_mobile/09_video-documentation/kakaotalk_1688312373255.mp4`
+- `assets/void-a_footage_from_mobile/09_video-documentation/kakaotalk_1688312373255_1.mp4`
+- `assets/void-a_footage_from_mobile/09_video-documentation/kakaotalk_1688312374413.mp4`
+- `assets/void-a_footage_from_mobile/09_video-documentation/kakaotalk_1688366354025.mp4`
 
 이 자료에서 다음 물리적 상태가 관찰된다.
 
@@ -91,7 +91,7 @@ runtime behavior는 별도로 판정한다.
 
 ## Excluded from direct evidence / provenance candidates
 
-- `assets/void-a_footage_from_mobile/20230702_191228.jpg` (inventory M067)
+- `assets/void-a_footage_from_mobile/99_unclassified/20230702_191228.jpg` (inventory M067)
   - VOID-A identifier가 충분하지 않은 ambiguous media로 취급한다.
   - final-installation direct evidence 목록에서는 제외하고 contextual/provenance candidate로만 남긴다.
 - 2023-07-03~04 SNS / Docs captures
