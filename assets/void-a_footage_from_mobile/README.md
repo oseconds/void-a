@@ -1,6 +1,6 @@
 # VOID-A mobile-footage archive
 
-Original filenames are preserved. Files are grouped for easier browsing; folder placement is a working archive classification, not a new provenance claim.
+Original filenames are preserved. Files are grouped primarily by evidence role for browsing; folder placement is a working archive classification, not a new provenance claim. `09_video-documentation` is intentionally retained as a separate operational/media bucket for original video documentation.
 
 | Folder | Contents | Count |
 |---|---|---:|
